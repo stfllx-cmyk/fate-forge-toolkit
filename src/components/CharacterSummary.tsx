@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DiceRollPopup } from "./DiceRollPopup";
+import { ReligionBlessingPopup } from "./ReligionBlessingPopup";
 
 // Race stats data
 const RACE_STATS = {
@@ -56,6 +57,13 @@ export const CharacterSummary = () => {
   const [pantheon, setPantheon] = useState("");
   const [god, setGod] = useState("");
   const [showDicePopup, setShowDicePopup] = useState(false);
+  const [showReligionPopup, setShowReligionPopup] = useState(false);
+  const [selectedBlessing, setSelectedBlessing] = useState<{
+    religion: string;
+    god: string;
+    domain: string;
+    blessing: string;
+  } | null>(null);
 
   const handleRaceChange = (race: string) => {
     setSelectedRace(race);
@@ -69,6 +77,13 @@ export const CharacterSummary = () => {
     console.log("Dice results to distribute:", results);
   };
 
+  const handleBlessingSelected = (blessing: { religion: string; god: string; domain: string; blessing: string }) => {
+    setSelectedBlessing(blessing);
+    setPantheon(blessing.religion);
+    setGod(blessing.god);
+    setBlessing(blessing.blessing);
+  };
+
   return (
     <div className="min-h-screen bg-background rune-bg p-6">
       <div className="max-w-4xl mx-auto">
@@ -78,12 +93,20 @@ export const CharacterSummary = () => {
               <CardTitle className="text-3xl font-bold text-fantasy-gold">
                 Character Summary
               </CardTitle>
-              <Button
-                onClick={() => setShowDicePopup(true)}
-                className="bg-divine text-divine-secondary hover:bg-divine/80 divine-glow"
-              >
-                Try your Luck
-              </Button>
+              <div className="flex space-x-3">
+                <Button
+                  onClick={() => setShowReligionPopup(true)}
+                  className="bg-chaos text-white hover:bg-chaos/80 chaos-glow"
+                >
+                  Religion and Blessing
+                </Button>
+                <Button
+                  onClick={() => setShowDicePopup(true)}
+                  className="bg-divine text-divine-secondary hover:bg-divine/80 divine-glow"
+                >
+                  Try your Luck
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-8">
@@ -94,10 +117,10 @@ export const CharacterSummary = () => {
                 <div>
                   <Label htmlFor="race">Race</Label>
                   <Select value={selectedRace} onValueChange={handleRaceChange}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-popover/50 backdrop-blur z-50">
                       <SelectValue placeholder="Select a race" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover backdrop-blur border-fantasy-gold/20 z-50">
                       {Object.keys(RACE_STATS).map((race) => (
                         <SelectItem key={race} value={race}>
                           {race}
@@ -150,10 +173,10 @@ export const CharacterSummary = () => {
                   <div>
                     <Label htmlFor="weapon-type">Weapon Type</Label>
                     <Select value={weaponType} onValueChange={setWeaponType}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-popover/50 backdrop-blur z-50">
                         <SelectValue placeholder="Select weapon type" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-popover backdrop-blur border-fantasy-gold/20 z-50">
                         {Object.keys(WEAPON_TYPES).map((type) => (
                           <SelectItem key={type} value={type}>
                             {type}
@@ -167,10 +190,10 @@ export const CharacterSummary = () => {
                     <div>
                       <Label htmlFor="weapon-item">Weapon Item</Label>
                       <Select value={weaponItem} onValueChange={setWeaponItem}>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-popover/50 backdrop-blur z-50">
                           <SelectValue placeholder="Select weapon item" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-popover backdrop-blur border-fantasy-gold/20 z-50">
                           {WEAPON_TYPES[weaponType as keyof typeof WEAPON_TYPES]?.map((item) => (
                             <SelectItem key={item} value={item}>
                               {item}
@@ -187,51 +210,75 @@ export const CharacterSummary = () => {
             {/* Blessing Section */}
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-fantasy-gold">Blessing</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="pantheon">Pantheon you serve</Label>
-                  <Select value={pantheon} onValueChange={setPantheon}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select pantheon" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.keys(PANTHEONS).map((pantheonName) => (
-                        <SelectItem key={pantheonName} value={pantheonName}>
-                          {pantheonName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              
+              {selectedBlessing ? (
+                <div className="bg-fantasy-gold/10 rounded-lg p-4 border border-fantasy-gold/20">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm text-muted-foreground">Religion</div>
+                      <div className="font-semibold text-fantasy-gold">{selectedBlessing.religion}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">God/Goddess</div>
+                      <div className="font-semibold text-divine">{selectedBlessing.god}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Domain</div>
+                      <div className="font-medium">{selectedBlessing.domain}</div>
+                    </div>
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-muted-foreground">Blessing</div>
+                      <div className="font-medium text-sm leading-relaxed">{selectedBlessing.blessing}</div>
+                    </div>
+                  </div>
                 </div>
-                
-                {pantheon && (
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="god">God you serve</Label>
-                    <Select value={god} onValueChange={setGod}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select god" />
+                    <Label htmlFor="pantheon">Pantheon you serve</Label>
+                    <Select value={pantheon} onValueChange={setPantheon}>
+                      <SelectTrigger className="bg-popover/50 backdrop-blur z-50">
+                        <SelectValue placeholder="Select pantheon" />
                       </SelectTrigger>
-                      <SelectContent>
-                        {PANTHEONS[pantheon as keyof typeof PANTHEONS]?.map((godName) => (
-                          <SelectItem key={godName} value={godName}>
-                            {godName}
+                      <SelectContent className="bg-popover backdrop-blur border-fantasy-gold/20 z-50">
+                        {Object.keys(PANTHEONS).map((pantheonName) => (
+                          <SelectItem key={pantheonName} value={pantheonName}>
+                            {pantheonName}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                )}
-                
-                <div>
-                  <Label htmlFor="blessing">Blessing</Label>
-                  <Input
-                    id="blessing"
-                    value={blessing}
-                    onChange={(e) => setBlessing(e.target.value)}
-                    placeholder="Enter blessing"
-                  />
+                  
+                  {pantheon && (
+                    <div>
+                      <Label htmlFor="god">God you serve</Label>
+                      <Select value={god} onValueChange={setGod}>
+                        <SelectTrigger className="bg-popover/50 backdrop-blur z-50">
+                          <SelectValue placeholder="Select god" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover backdrop-blur border-fantasy-gold/20 z-50">
+                          {PANTHEONS[pantheon as keyof typeof PANTHEONS]?.map((godName) => (
+                            <SelectItem key={godName} value={godName}>
+                              {godName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <Label htmlFor="blessing">Blessing</Label>
+                    <Input
+                      id="blessing"
+                      value={blessing}
+                      onChange={(e) => setBlessing(e.target.value)}
+                      placeholder="Enter blessing"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -241,6 +288,12 @@ export const CharacterSummary = () => {
         isOpen={showDicePopup}
         onClose={() => setShowDicePopup(false)}
         onResults={handleDiceResults}
+      />
+
+      <ReligionBlessingPopup
+        isOpen={showReligionPopup}
+        onClose={() => setShowReligionPopup(false)}
+        onBlessingSelected={handleBlessingSelected}
       />
     </div>
   );
