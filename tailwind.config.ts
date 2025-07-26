@@ -52,6 +52,21 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				divine: {
+					DEFAULT: 'hsl(var(--divine-primary))',
+					secondary: 'hsl(var(--divine-secondary))',
+					glow: 'hsl(var(--divine-glow))'
+				},
+				chaos: {
+					DEFAULT: 'hsl(var(--chaos-primary))',
+					secondary: 'hsl(var(--chaos-secondary))',
+					glow: 'hsl(var(--chaos-glow))'
+				},
+				fantasy: {
+					gold: 'hsl(var(--fantasy-gold))',
+					silver: 'hsl(var(--fantasy-silver))',
+					bronze: 'hsl(var(--fantasy-bronze))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
